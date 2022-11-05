@@ -1,24 +1,30 @@
 import sqlite3
 
-def inputOp(cursor, connection):
+global connection 
+global cursor
+
+connection = sqlite3.connect("database.db")
+cursor = connection.cursor()
+
+def inputOp():
     inputVal = input("Enter product details: \n")
 
     product = tuple(val for val in inputVal.split())
 
-    if  len(product) == 3 and product[2].isdigit():
+    if len(product) == 3 and product[2].isdigit():
         cursor.execute("INSERT INTO products (name, seller, price) VALUES (?, ?, ?)", product)
         connection.commit()
     else:
         print("Wrong input, unable to insert\n")
 
-def listOp(cursor):
+def listOp():
     cursor.execute("SELECT * FROM products")
     print("\n{:<8} {:<15} {:<15} {:<10}".format("ID", "NAME", "SELLER", "PRICE"))
     for row in cursor:
         print("{:<8} {:<15} {:<15} {:<10}".format(row[0], row[1], row[2], row[3]))
     print("\n")
 
-def delOp(cursor, connection):
+def delOp():
     inputVal = input("Enter product ID: \n")
 
     if inputVal.isnumeric(): 
@@ -28,9 +34,6 @@ def delOp(cursor, connection):
         print("Input is not numeric, unable to select\n")
 
 def main():
-    connection = sqlite3.connect("database.db")
-    cursor = connection.cursor()
-
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,11 +59,11 @@ def main():
 
         match usr_input:
             case "INSERT":
-                inputOp(cursor, connection)
+                inputOp()
             case "LIST":
-                listOp(cursor)
+                listOp()
             case "DELETE":
-                delOp(cursor, connection)
+                delOp()
             case "EXIT":
                 connection.close()
                 break
