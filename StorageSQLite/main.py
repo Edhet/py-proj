@@ -9,10 +9,10 @@ cursor = connection.cursor()
 def inputOp():
     inputVal = input("Enter product details: \n")
 
-    product = tuple(val for val in inputVal.split())
+    newProduct = tuple(val for val in inputVal.split())
 
-    if len(product) == 3 and product[2].isdigit():
-        cursor.execute("INSERT INTO products (name, seller, price) VALUES (?, ?, ?)", product)
+    if len(newProduct) == 3 and newProduct[2].isdigit():
+        cursor.execute("INSERT INTO products (name, seller, price) VALUES (?, ?, ?)", newProduct)
         connection.commit()
     else:
         print("Wrong input, unable to insert\n")
@@ -33,6 +33,22 @@ def delOp():
     else:
         print("Input is not numeric, unable to select\n")
 
+def updateOp():
+    inputId = input("Enter product ID: \n")
+    inputProd = input("Enter product details: \n")
+
+    newProduct = tuple(val for val in inputProd.split())
+    newProduct = newProduct + (inputId,)
+
+    if len(newProduct) == 4 and newProduct[2].isdigit() and newProduct[3].isdigit():
+        try:
+            cursor.execute("UPDATE products SET name = ?, seller = ?, price = ? WHERE id = ?)", newProduct)
+            connection.commit()
+        except:
+            print("Wrong id, unable to update\n")
+    else:
+        print("Wrong input, unable to update\n")    
+
 def main():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products(
@@ -47,8 +63,9 @@ def main():
 
         Available operations:
             INSERT
-            LIST
+            UPDATE
             DELETE
+            LIST
             EXIT
             
     """)
@@ -62,6 +79,8 @@ def main():
                 inputOp()
             case "LIST":
                 listOp()
+            case "UPDATE":
+                updateOp()
             case "DELETE":
                 delOp()
             case "EXIT":
